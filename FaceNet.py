@@ -40,6 +40,7 @@ class Encoder(object):
         assert np.all([type(img) is np.ndarray and len(img.shape) == 3 for img in imgs]);
         batch = self.batch(imgs);
         feature = self.model.signatures['serving_default'](batch);
+        feature = feature['Bottleneck_BatchNorm'];
         feature = feature / tf.math.sqrt(tf.math.reduce_sum(tf.math.pow(feature, 2), axis = -1, keepdims = True));
         return feature;
 
