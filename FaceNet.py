@@ -10,7 +10,8 @@ class Encoder(object):
 
     def __init__(self, model_path = 'models'):
 
-        self.model = tf.keras.models.load_model(join(model_path, 'facenet_keras.h5'), compile = False);
+        #self.model = tf.keras.models.load_model(join(model_path, 'facenet_keras.h5'), compile = False);
+        self.model = tf.keras.models.load_model(join(model_path, 'facenet', '1'));
 
     def preprocess(self, img):
 
@@ -35,10 +36,10 @@ class Encoder(object):
     def encode(self, imgs):
 
         assert type(imgs) is list;
-        if len(imgs) == 0: return tf.zeros((0,self.model.outputs[0].shape[-1]), dtype = tf.float32);
+        if len(imgs) == 0: return tf.zeros((0,self.model.signatures['serving_default'].outputs[0].shape[-1]), dtype = tf.float32);
         assert np.all([type(img) is np.ndarray and len(img.shape) == 3 for img in imgs]);
         batch = self.batch(imgs);
-        feature = self.model(batch);
+        feature = self.model.signatures['serving_default'](batch);
         feature = feature / tf.math.sqrt(tf.math.reduce_sum(tf.math.pow(feature, 2), axis = -1, keepdims = True));
         return feature;
 
